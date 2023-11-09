@@ -36,14 +36,45 @@ const displayPhones = (phones, isShowAll) => {
         <div class="card-body items-center text-center">
         <h2 class="card-title">${phone.phone_name}</h2>
         <p>${phone.slug}</p>
-        <div class="card-actions">
-            <button class="btn btn-primary">Buy Now</button>
+        <div class="card-actions justify-center">
+            <button onclick="handleShowDetail('${phone.slug}'); show_details_modal.showModal()"
+             class="btn btn-primary">Show Details</button>
         </div>
         </div>
         `;
         phoneContainer.appendChild(phoneCard);
     })
     toggleLoadingSpinner(false);
+}
+const handleShowDetail = async (id) => {
+    // console.log('clicked show details', id);
+    // load single phone data
+    const res = await fetch(`https://openapi.programming-hero.com/api/phone/${id}`);
+    const data = await res.json();
+    const phone = data.data;
+
+    showPhoneDetails(phone)
+
+}
+
+const showPhoneDetails = (phone) => {
+    console.log(phone);
+    const phoneName = document.getElementById('show-detail-phone-name');
+    phoneName.innerText = phone.name;
+
+    const showDetailContainer = document.getElementById('show-detail-container');
+
+    showDetailContainer.innerHTML = `
+    <img src="${phone.image}" alt="" />
+    <p><span>Storage: </span>${phone?.mainFeatures?.storage}</p>
+    <p><span>Memory: </span>${phone?.mainFeatures?.memory}</p>
+    <p><span>releaseDate: </span>${phone?.releaseDate}</p>
+    <p><span>GPS: </span>${phone?.others?.GPS || 'No GPS available'}</p>
+    `
+
+    // show the modal
+    show_details_modal.showModal();
+
 }
 // handle search button
 const handleSearch = (isShowAll) => {
